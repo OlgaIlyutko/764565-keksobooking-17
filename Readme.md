@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Ольга Ильютко](https://up.htmlacademy.ru/javascript/17/user/764565).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Штурман](https://htmlacademy.ru/profile/id73551).
 
 ---
 
