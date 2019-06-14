@@ -7,12 +7,15 @@ var randomPointMap = function (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
+var pointMap;
+
 for (var i = 0; i < 8; i++) {
-  pointsMap[i] = {
+   pointsMap.push({
     author: {avatar: './img/avatars/user0' + (i + 1) + '.png'},
     offter: {type: type[randomPointMap(0, 3)]},
     location: {x: randomPointMap(0, document.querySelector('main').offsetWidth),
-      y: randomPointMap(130, 630)}};
+      y: randomPointMap(130, 630)}});
+	
 }
 
 map.classList.remove('map--faded');
