@@ -56,3 +56,13 @@ var addressField = adForm.querySelector('#address');
 pinMain.addEventListener('mouseup', function () {
   addressField.value = pxDelete(pinMain.style.left) + ', ' + pxDelete(pinMain.style.top);
 });
+
+var adFormType = adForm.querySelector('#type');
+var adFormPrice = adForm.querySelector('#price');
+var adFormTypeValue = adFormType.options[adFormType.selectedIndex].value;
+
+/*вот тут в консоль неверные данные выводятся */
+adFormType.onchange = function () {
+	console.log(adFormTypeValue);
+	console.log(adFormType.querySelector('[selected]').value);
+}
