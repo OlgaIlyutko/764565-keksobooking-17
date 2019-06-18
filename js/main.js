@@ -63,25 +63,25 @@ var adFormPrice = adForm.querySelector('#price');
 adFormType.onchange = function () {
   var adFormTypeValue = adFormType.options[adFormType.selectedIndex].value;
   switch (adFormTypeValue) {
-    case 'bungalo': {
+    case 'bungalo':
       adFormPrice.min = '0';
-      adFormPrice.placeholder = '0';}
+      adFormPrice.placeholder = '0';
       break;
-    case 'flat': {
+    case 'flat':
       adFormPrice.min = '1000';
-      adFormPrice.placeholder = '1000';}
+      adFormPrice.placeholder = '1000';
       break;
-    case 'house': {
+    case 'house':
       adFormPrice.min = '5000';
-      adFormPrice.placeholder	= '5000';}
+      adFormPrice.placeholder	= '5000';
       break;
-    case 'palace': {
+    case 'palace':
       adFormPrice.min = '10000';
-      adFormPrice.placeholder	= '10000';}
+      adFormPrice.placeholder	= '10000';
       break;
     default: break;
-}
-}
+  }
+};
 
 var adFormTimein = adForm.querySelector('#timein');
 var adFormTimeout = adForm.querySelector('#timeout');
@@ -94,7 +94,7 @@ adFormTimein.onchange = function () {
     case '14:00': adFormTimeout[2].selected = true; break;
     default: break;
   }
-}
+};
 
 adFormTimeout.onchange = function () {
   var adFormTimeoutValue = adFormTimeout.options[adFormTimeout.selectedIndex].value;
@@ -104,4 +104,4 @@ adFormTimeout.onchange = function () {
     case '14:00': adFormTimein[2].selected = true; break;
     default: break;
   }
-}
+};
