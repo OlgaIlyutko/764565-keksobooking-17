@@ -59,4 +59,49 @@ pinMain.addEventListener('mouseup', function () {
 
 var adFormType = adForm.querySelector('#type');
 var adFormPrice = adForm.querySelector('#price');
-var adFormTypeValue = adFormType.options[adFormType.selectedIndex].value;
+
+adFormType.onchange = function () {
+  var adFormTypeValue = adFormType.options[adFormType.selectedIndex].value;
+  switch (adFormTypeValue) {
+    case 'bungalo':
+      adFormPrice.min = '0';
+      adFormPrice.placeholder = '0';
+      break;
+    case 'flat':
+      adFormPrice.min = '1000';
+      adFormPrice.placeholder = '1000';
+      break;
+    case 'house':
+      adFormPrice.min = '5000';
+      adFormPrice.placeholder	= '5000';
+      break;
+    case 'palace':
+      adFormPrice.min = '10000';
+      adFormPrice.placeholder	= '10000';
+      break;
+    default: break;
+  }
+};
+
+var adFormTimein = adForm.querySelector('#timein');
+var adFormTimeout = adForm.querySelector('#timeout');
+
+adFormTimein.onchange = function () {
+  var adFormTimeinValue = adFormTimein.options[adFormTimein.selectedIndex].value;
+  switch (adFormTimeinValue) {
+    case '12:00': adFormTimeout[0].selected = true; break;
+    case '13:00': adFormTimeout[1].selected = true; break;
+    case '14:00': adFormTimeout[2].selected = true; break;
+    default: break;
+  }
+};
+
+adFormTimeout.onchange = function () {
+  var adFormTimeoutValue = adFormTimeout.options[adFormTimeout.selectedIndex].value;
+  switch (adFormTimeoutValue) {
+    case '12:00': adFormTimein[0].selected = true; break;
+    case '13:00': adFormTimein[1].selected = true; break;
+    case '14:00': adFormTimein[2].selected = true; break;
+    default: break;
+  }
+};
