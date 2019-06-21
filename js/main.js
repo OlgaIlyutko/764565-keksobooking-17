@@ -1,21 +1,34 @@
 'use strict';
+
 var pointsMap = [];
-var type = ['palace', 'flat', 'house', 'bungalo'];
+var TYPE = ['palace', 'flat', 'house', 'bungalo'];
 var map = document.querySelector('.map');
 var pointsTempl = document.querySelector('#pin').content.querySelector('.map__pin');
 var adForm = document.querySelector('.ad-form');
 var pinMain = map.querySelector('.map__pin--main');
+var POINTS_COUNT = 8;
+var AREA_MAP = {
+  topY: 130,
+  bottomY: 630
+}
 
 var randomPointMap = function (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
-for (var i = 0; i < 8; i++) {
+for (var i = 0; i < POINTS_COUNT; i++) {
   pointsMap.push({
-    author: {avatar: './img/avatars/user0' + (i + 1) + '.png'},
-    offter: {type: type[randomPointMap(0, 3)]},
-    location: {x: randomPointMap(0, document.querySelector('main').offsetWidth),
-      y: randomPointMap(130, 630)}});
+    author: {
+      avatar: './img/avatars/user0' + (i + 1) + '.png'
+    },
+    offter: {
+      TYPE: TYPE[randomPointMap(0, 3)]
+    },
+    location: {
+      x: randomPointMap(0, document.querySelector('main').offsetWidth),
+      y: randomPointMap(AREA_MAP.topY, AREA_MAP.bottomY)
+    }
+  });
 }
 
 var pointView = function (pointTempl) {
@@ -27,7 +40,7 @@ var pointView = function (pointTempl) {
 
 var fragment = document.createDocumentFragment();
 var pinPlace = function () {
-  for (var j = 0; j < 8; j++) {
+  for (var j = 0; j < POINTS_COUNT; j++) {
     fragment.appendChild(pointView(pointsMap[j]));
   }
   var mapElemet = document.querySelector('.map__pins');
@@ -39,23 +52,23 @@ for (var k = 0; k < adFormFieldsetList.length; k++) {
   adFormFieldsetList[k].disabled = true;
 }
 
-pinMain.addEventListener('click', function () {
+var flagActivation = false;
+
+var cardActivation = function () {
+  flagActivation = true;
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
   for (var l = 0; l < adFormFieldsetList.length; l++) {
     adFormFieldsetList[l].disabled = false;
   }
   pinPlace();
-});
+};
 
 var pxDelete = function (str) {
   return str.substring(0, str.length - 2);
 };
 
 var addressField = adForm.querySelector('#address');
-pinMain.addEventListener('mouseup', function () {
-  addressField.value = pxDelete(pinMain.style.left) + ', ' + pxDelete(pinMain.style.top);
-});
 
 var adFormType = adForm.querySelector('#type');
 var adFormPrice = adForm.querySelector('#price');
@@ -86,22 +99,72 @@ adFormType.onchange = function () {
 var adFormTimein = adForm.querySelector('#timein');
 var adFormTimeout = adForm.querySelector('#timeout');
 
-adFormTimein.onchange = function () {
-  var adFormTimeinValue = adFormTimein.options[adFormTimein.selectedIndex].value;
-  switch (adFormTimeinValue) {
-    case '12:00': adFormTimeout[0].selected = true; break;
-    case '13:00': adFormTimeout[1].selected = true; break;
-    case '14:00': adFormTimeout[2].selected = true; break;
-    default: break;
-  }
-};
+adFormTimein.addEventListener('change', function() {
+  adFormTimeout.value = adFormTimein.value;
+});
+adFormTimeout.addEventListener('change', function() {
+  adFormTimein.value = adFormTimeout.value;
+});
 
-adFormTimeout.onchange = function () {
-  var adFormTimeoutValue = adFormTimeout.options[adFormTimeout.selectedIndex].value;
-  switch (adFormTimeoutValue) {
-    case '12:00': adFormTimein[0].selected = true; break;
-    case '13:00': adFormTimein[1].selected = true; break;
-    case '14:00': adFormTimein[2].selected = true; break;
-    default: break;
+pinMain.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+
+   var startCoords = {
+      x: evt.pageX,
+      y: evt.pageY
+    };
+
+
+  var limits = {
+    top: AREA_MAP.topY - pinMain.offsetHeight,
+    bottom: AREA_MAP.bottomY - pinMain.offsetHeight,
+    left: map.offsetLeft,
+    right: map.offsetLeft + map.offsetWidth - pinMain.offsetWidth
   }
-};
+
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    var newCoords = {
+      x: moveEvt.pageX,
+      y: moveEvt.pageY
+    };
+
+     var delta = {
+      x: startCoords.x - newCoords.x,
+      y: startCoords.y - newCoords.y
+    };
+
+     startCoords = {
+      x: newCoords.x,
+      y: newCoords.y
+    };
+
+    if (moveEvt.pageY < limits.bottom && moveEvt.pageY > limits.top) {
+      pinMain.style.top = (pinMain.offsetTop - delta.y) + 'px';
+    }
+
+     if (moveEvt.pageX < limits.right && moveEvt.pageX > limits.left) {
+      pinMain.style.left = (pinMain.offsetLeft - delta.x) + 'px';
+    }
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+    if (!flagActivation) {
+      cardActivation();
+    };
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+
+  document.addEventListener('mouseup', function () {
+    var addressFieldLeft = parseInt(pxDelete(pinMain.style.left)) + Math.round(pinMain.offsetWidth / 2);
+    var addressFieldTop = parseInt(pxDelete(pinMain.style.top)) + pinMain.offsetHeight;
+    addressField.value = addressFieldLeft + ', ' + addressFieldTop;
+  });
+});
