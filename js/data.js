@@ -5,8 +5,8 @@
   var TYPE = ['palace', 'flat', 'house', 'bungalo'];
   var POINTS_COUNT = 8;
   var AREA_MAP = {
-    topY: 130,
-    bottomY: 630
+    TOP_Y: 130,
+    BOTTOM_Y: 630
   };
 
   var randomPointMap = function (min, max) {
@@ -23,7 +23,7 @@
       },
       location: {
         x: randomPointMap(0, document.querySelector('main').offsetWidth),
-        y: randomPointMap(AREA_MAP.topY, AREA_MAP.bottomY)
+        y: randomPointMap(AREA_MAP.TOP_Y, AREA_MAP.BOTTOM_Y)
       }
     });
   }
