@@ -1,5 +1,5 @@
 'use strict';
-
+/*
 (function () {
   var pointsMap = [];
   var TYPE = ['palace', 'flat', 'house', 'bungalo'];
@@ -28,4 +28,4 @@
     });
   }
   window.data = pointsMap;
-})();
+})();*/
