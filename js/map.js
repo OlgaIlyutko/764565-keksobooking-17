@@ -46,7 +46,6 @@
     mapElemet.appendChild(fragment);
   };
 
-
   var onError = function (errorMessage) {
     var errorView = function () {
       var errorTemplClone = errorsTempl.cloneNode(true);
