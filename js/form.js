@@ -6,28 +6,18 @@
   var adFormPrice = adForm.querySelector('#price');
   var adFormTimein = adForm.querySelector('#timein');
   var adFormTimeout = adForm.querySelector('#timeout');
+  
+  var typeToPrice = {
+    'bungalo': '0',
+    'flat': '1000',
+    'house': '5000',
+    'palace': '10000'
+  };
 
   adFormType.onchange = function () {
     var adFormTypeValue = adFormType.options[adFormType.selectedIndex].value;
-    switch (adFormTypeValue) {
-      case 'bungalo':
-        adFormPrice.min = '0';
-        adFormPrice.placeholder = '0';
-        break;
-      case 'flat':
-        adFormPrice.min = '1000';
-        adFormPrice.placeholder = '1000';
-        break;
-      case 'house':
-        adFormPrice.min = '5000';
-        adFormPrice.placeholder	= '5000';
-        break;
-      case 'palace':
-        adFormPrice.min = '10000';
-        adFormPrice.placeholder	= '10000';
-        break;
-      default: break;
-    }
+    adFormPrice.min = typeToPrice[adFormTypeValue];
+    adFormPrice.placeholder = typeToPrice[adFormTypeValue];
   };
 
   adFormTimein.addEventListener('change', function () {

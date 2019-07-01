@@ -3,6 +3,7 @@
 (function () {
   var URL = 'https://js.dump.academy/keksobooking/data';
   var OK_STATUS = 200;
+  var POINTS_COUNT = 8;
 
   var loadData = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
@@ -10,7 +11,7 @@
 
     xhr.addEventListener('load', function () {
       if (xhr.status === OK_STATUS) {
-        onLoad(xhr.response);
+        onLoad(xhr.response, POINTS_COUNT);
       } else {
         onError('Статус ответа ' + xhr.status + ' ' + xhr.statusText);
       }
