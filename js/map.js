@@ -4,12 +4,14 @@
   
   var map = document.querySelector('.map');
   var adForm = document.querySelector('.ad-form');
+  var mapFilters = document.querySelector('.map__filters'); 
   var pointsTempl = document.querySelector('#pin').content.querySelector('.map__pin');
   var errorsTempl = document.querySelector('#error').content.querySelector('.error');
   var pinMain = map.querySelector('.map__pin--main');
   var mapElement = document.querySelector('.map__pins');
   var addressField = adForm.querySelector('#address');
-  var flagActivation = false;
+  var mapActivated = false;
+  var pinsLoaded = false;
   var INDICATOR_PIN_HEIGHT = 20;
   var pinMainSizes = {
     WIDTH: pinMain.offsetWidth,
@@ -22,78 +24,83 @@
   var limits = {
     top: AreaMap.TOP_Y - pinMainSizes.HEIGHT,
     bottom: AreaMap.BOTTOM_Y - pinMainSizes.HEIGHT,
-    left: - pinMain.offsetWidth / 2,
+    left: -pinMain.offsetWidth / 2,
     right: map.offsetWidth - (pinMain.offsetWidth / 2)
   };
-  var pinsLoaded = false;
+  
   window.allPins = [];
   
-  
-  var adFormFieldsetList = adForm.querySelectorAll('fieldset');
-  for (var k = 0; k < adFormFieldsetList.length; k++) {
-    adFormFieldsetList[k].disabled = true;
+  var hideAllForm = function(flag) {
+    hideOneForm(adForm, flag);
+    hideOneForm(mapFilters, flag);
+  };
+  var hideOneForm = function(form, flag) {
+    Array.from(form.children).forEach(function (field) {
+      field.disabled = flag;
+    })
   }
-
   
-  var pointView = function (pointTempl) {
+  hideAllForm(true);
+  
+  var viewPins = function (pointTempl) {
     var pointTemplClone = pointsTempl.cloneNode(true);
     pointTemplClone.style = 'left: ' + (pointTempl.location.x - document.querySelector('.map__pin').offsetWidth / 2) + 'px; top: ' + (pointTempl.location.y - document.querySelector('.map__pin').offsetHeight) + 'px;';
     pointTemplClone.querySelector('img').src = pointTempl.author.avatar;
     return pointTemplClone;
   };
   
-  var onLoadPins = function (data, count) {
+  var onPinsCreate = function (data, count) {
     var mapPins = mapElement.querySelectorAll("[class=map__pin]");
     mapPins.forEach(function(mapPin) {
       mapPin.remove();
     })
+    var fragment = document.createDocumentFragment();
     var takeNumber = data.length > count ? count : data.length;
     for (var j = 0; j < takeNumber; j++) {
-      mapElement.appendChild(pointView(data[j]));
+      fragment.appendChild(viewPins(data[j]));
     }
-    if (flagActivation && !pinsLoaded) {
+    mapElement.appendChild(fragment);
+    if (mapActivated && !pinsLoaded) {
       pinsLoaded = true;
       allPins = data;
     }
   };
   
   var onError = function (errorMessage) {
-    var errorView = function () {
+    var viewError = function () {
       var errorTemplClone = errorsTempl.cloneNode(true);
       errorTemplClone.querySelector('p').textContent = errorMessage;
       return errorTemplClone;
     };
 
-    document.querySelector('main').appendChild(errorView(errorMessage));
+    document.querySelector('main').appendChild(viewError(errorMessage));
 
     var errorModal = document.querySelector('.error');
     var errorModalButton = errorModal.querySelector('.error__button');
 
-    var errorClose = function () {
+    var onErrorClose = function () {
       errorModal.remove();
     };
 
     errorModalButton.addEventListener('click', function () {
-      errorClose();
+      onErrorClose();
     });
 
     errorModal.addEventListener('click', function () {
-      errorClose();
+      onErrorClose();
     });
 
     document.addEventListener('keydown', function (evt) {
-      window.util.isEscEvent(evt, errorClose);
+      window.util.isEscEvent(evt, onErrorClose);
     });
   };
 
   
-  var cardActivation = function () {
+  var activateMap = function () {
     map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
-    for (var l = 0; l < adFormFieldsetList.length; l++) {
-      adFormFieldsetList[l].disabled = false;
-    }
-    window.backend.load(onLoadPins, onError);
+    hideAllForm(false);
+    window.backend.load(onPinsCreate, onError);
   };
 
   
@@ -154,9 +161,9 @@
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-      if (!flagActivation) {
-        flagActivation = true;
-        cardActivation();
+      if (!mapActivated) {
+        mapActivated = true;
+        activateMap();
       }
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
@@ -173,7 +180,7 @@
   });
   
   window.map = {
-    loadPins: onLoadPins
+    loadPins: onPinsCreate
   }
   
 })();
