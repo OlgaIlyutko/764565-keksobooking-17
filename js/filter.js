@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   var mapFilters = document.querySelector('.map__filters'); 
   var filterMapFiltersType = mapFilters.querySelector('#housing-type');
@@ -8,7 +9,7 @@
  
   filterMapFiltersType.onchange = function () {
     var pinsType = [];
-    pinsType = allPins.filter(function(onePin) {
+    pinsType = window.map.allPinsMap.filter(function(onePin) {
       if (filterMapFiltersType.options[filterMapFiltersType.selectedIndex].value == 'any' ) {
         pinsCount = POINTS_COUNT;
         return true;

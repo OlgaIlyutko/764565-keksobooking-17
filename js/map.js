@@ -21,6 +21,12 @@
     TOP_Y: 130,
     BOTTOM_Y: 630
   };
+  
+  var pinMainDedaulCoord = {
+    left: pinMain.offsetLeft,
+    top: pinMain.offsetTop
+  }
+  
   var limits = {
     top: AreaMap.TOP_Y - pinMainSizes.HEIGHT,
     bottom: AreaMap.BOTTOM_Y - pinMainSizes.HEIGHT,
@@ -28,7 +34,7 @@
     right: map.offsetWidth - (pinMain.offsetWidth / 2)
   };
   
-  window.allPins = [];
+  var allPins = [];
   
   var hideAllForm = function(flag) {
     hideOneForm(adForm, flag);
@@ -62,7 +68,7 @@
     mapElement.appendChild(fragment);
     if (mapActivated && !pinsLoaded) {
       pinsLoaded = true;
-      allPins = data;
+      window.map.allPinsMap = data;
     }
   };
   
@@ -103,7 +109,12 @@
     window.backend.load(onPinsCreate, onError);
   };
 
-  
+  /*var onAdressPinMain = function () {
+    var addressFieldLeft = pxDelete(pinMain.style.left) + Math.round(pinMain.offsetWidth / 2);
+    var addressFieldTop = pxDelete(pinMain.style.top) + pinMainSizes.HEIGHT;
+    addressField.value = addressFieldLeft + ', ' + addressFieldTop;
+  }
+  */
   var pxDelete = function (str) {
     return parseInt(str.substring(0, str.length - 2), 10);
   };
@@ -180,7 +191,10 @@
   });
   
   window.map = {
-    loadPins: onPinsCreate
+    loadPins: onPinsCreate,
+    hideForm: hideAllForm,
+    allPinsMap: allPins,
+    pinMainCoords: pinMainDedaulCoord
   }
   
 })();

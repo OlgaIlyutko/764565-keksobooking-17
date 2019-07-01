@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var map = document.querySelector('.map');
+  var mapElement = document.querySelector('.map__pins');
+  var pinMain = map.querySelector('.map__pin--main');
   var adForm = document.querySelector('.ad-form');
   var adFormType = adForm.querySelector('#type');
   var adFormPrice = adForm.querySelector('#price');
@@ -8,6 +11,8 @@
   var adFormTimeout = adForm.querySelector('#timeout');
   var adFormRoom = adForm.querySelector('#room_number');
   var adFormCapacity = adForm.querySelector('#capacity');
+  var addressField = adForm.querySelector('#address');
+  var successTempl = document.querySelector('#success').content.querySelector('.success');
   
   var typeToPrice = {
     'bungalo': '0',
@@ -32,46 +37,68 @@
   adFormRoom.addEventListener('change', function () {
     
     var adFormRoomValue = adFormRoom.options[adFormRoom.selectedIndex].value;
-    adFormCapacity.value = adFormRoomValue;
-      var valRo = adFormRoomValue;
-      adFormCapacity.value = valRo;
-      console.log(valRo);
-      var indVapRo = adFormCapacity.indexOf(valRo);
-      console.log(indVapRo);
-    for (var i = 0; i < 4 ; i++) {
-   
-      if (adFormCapacity.value != valRo) {
-        
-        
-      }
-     /* for (var i = adFormRoomValue - 1; i > 0; i-- ) {
-
-       if (adFormCapacity.value != i) {
-         adFormCapacity.options[i].disabled = false; 
-       }
-
-      }*/
+    for (var i=0; i < 4; i++) {
+      if ((adFormCapacity.options[i].value > parseInt(adFormRoomValue, 10)) || (adFormCapacity.options[i].value == 0)) {
+        if (adFormRoomValue != 100) {
+          adFormCapacity.options[i].disabled = true;
+        } else {
+          adFormCapacity.options[i].disabled = false;
+        }
+      } else {
+        if (adFormRoomValue != 100) {
+          adFormCapacity.options[i].disabled = false;
+          adFormCapacity.value = adFormRoomValue;
+        } else {
+          adFormCapacity.options[i].disabled = true;
+          adFormCapacity.value = 0;
+        }  
+      }      
     }
+ }); 
+  var adFormResetButton = adForm.querySelector('.ad-form__reset');
+  adFormResetButton.addEventListener('click', function(evt) {
+    evt.preventDefault();
     
-   /* switch (adFormRoomValue) {
-      case '100':
-        console.log('100');
-        adFormCapacity.options[1].disabled = true;
-        adFormCapacity.options[2].disabled = true;
-        adFormCapacity.options[0].disabled = true;
-        adFormCapacity.options[3].selected = true;
-        break;
-      case '1':
-        
-        break;
-      case '2':
-        
-        break;
-      case '3':
-       
-        break;
-      default: break;
-    }*/
-  });  
+    var mapPins = mapElement.querySelectorAll("[class=map__pin]");
+    mapPins.forEach(function(mapPin) {
+      mapPin.remove();
+    })
+    
+    
+    adForm.reset();
+    
+    pinMain.style.left = window.map.pinMainCoords.left + 'px';
+    pinMain.style.top = window.map.pinMainCoords.top + 'px';
+    /*window.map.setAddressPinMain();*/
+    
+  })
+  
+  var adFormSubmitButton = adForm.querySelector('.ad-form__submit');
+  
+  adFormSubmitButton.addEventListener('submit', function (Wevt) {
+    Wevt.preventDefault();
+    var viewSuccess = function () {
+      var successTemplClone = successTempl.cloneNode(true);
+      successTemplClone.querySelector('p').textContent = successMessage;
+      return successTemplClone;
+    };
+    var successMessage = "ww";
+    document.querySelector('main').appendChild(viewSuccess(successMessage));
+
+    var successModal = document.querySelector('.success');
+    
+
+    var onSuccessClose = function () {
+      successModal.remove();
+    };
+
+    successModal.addEventListener('click', function () {
+      onSuccessClose();
+    });
+
+    document.addEventListener('keydown', function (evt) {
+      window.util.isEscEvent(evt, onSuccessClose);
+    });
+  });
   
 })();
