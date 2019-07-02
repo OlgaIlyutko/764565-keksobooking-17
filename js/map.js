@@ -22,9 +22,9 @@
     BOTTOM_Y: 630
   };
   
-  var pinMainDedaulCoord = {
-    left: pinMain.offsetLeft,
-    top: pinMain.offsetTop
+  var pinMainDedaultCoords = {
+    x: pinMain.offsetLeft,
+    y: pinMain.offsetTop
   }
   
   var limits = {
@@ -46,7 +46,12 @@
     })
   }
   
-  hideAllForm(true);
+  var loadPageFirst = function () {
+    hideAllForm(true);
+    onAddressPinMain(); 
+  };
+  
+  
   
   var viewPins = function (pointTempl) {
     var pointTemplClone = pointsTempl.cloneNode(true);
@@ -55,11 +60,15 @@
     return pointTemplClone;
   };
   
-  var onPinsCreate = function (data, count) {
+  var clearAllPins = function () {
     var mapPins = mapElement.querySelectorAll("[class=map__pin]");
     mapPins.forEach(function(mapPin) {
       mapPin.remove();
     })
+  };
+  
+  var onPinsCreate = function (data, count) {
+    clearAllPins();
     var fragment = document.createDocumentFragment();
     var takeNumber = data.length > count ? count : data.length;
     for (var j = 0; j < takeNumber; j++) {
@@ -109,15 +118,18 @@
     window.backend.load(onPinsCreate, onError);
   };
 
-  /*var onAdressPinMain = function () {
-    var addressFieldLeft = pxDelete(pinMain.style.left) + Math.round(pinMain.offsetWidth / 2);
-    var addressFieldTop = pxDelete(pinMain.style.top) + pinMainSizes.HEIGHT;
-    addressField.value = addressFieldLeft + ', ' + addressFieldTop;
-  }
-  */
-  var pxDelete = function (str) {
-    return parseInt(str.substring(0, str.length - 2), 10);
+  var setPinMainCoords = function (coords) {
+    pinMain.style.left = coords.x + 'px';
+    pinMain.style.top = coords.y + 'px';
   };
+      
+  var onAddressPinMain = function () {
+    var addressFieldLeft = pinMain.offsetLeft + Math.round(pinMain.offsetWidth / 2);
+    var addressFieldTop = pinMain.offsetTop + pinMainSizes.HEIGHT;
+    addressField.value = addressFieldLeft + ', ' + addressFieldTop;
+  };
+  
+  
   var pinMainCoords = {
     x: pinMain.offsetLeft,
     y: pinMain.offsetTop
@@ -132,27 +144,23 @@
 
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
-
       var newCoords = {
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
-
       var delta = {
         x: startCoords.x - newCoords.x,
         y: startCoords.y - newCoords.y
       };
-
       startCoords = {
         x: newCoords.x,
         y: newCoords.y
       };
-
       pinMainCoords = {
         x: pinMain.offsetLeft - delta.x,
         y: pinMain.offsetTop - delta.y
       };
-
+      
       if (pinMainCoords.x > limits.right) {
         pinMainCoords.x = limits.right;
       }
@@ -183,18 +191,21 @@
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
 
-    document.addEventListener('mouseup', function () {
-      var addressFieldLeft = pxDelete(pinMain.style.left) + Math.round(pinMain.offsetWidth / 2);
-      var addressFieldTop = pxDelete(pinMain.style.top) + pinMainSizes.HEIGHT;
-      addressField.value = addressFieldLeft + ', ' + addressFieldTop;
-    });
+    document.addEventListener('mouseup', onAddressPinMain);
   });
+  
+  
+  loadPageFirst();
   
   window.map = {
     loadPins: onPinsCreate,
     hideForm: hideAllForm,
+    changePinMainCoords: setPinMainCoords,
+    displayAddressPinMain: onAddressPinMain,
+    delAllPins: clearAllPins,
+    errorExchangeData: onError,
     allPinsMap: allPins,
-    pinMainCoords: pinMainDedaulCoord
+    pinMainCoords: pinMainDedaultCoords
   }
   
 })();
