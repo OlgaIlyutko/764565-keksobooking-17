@@ -22,7 +22,7 @@
     BOTTOM_Y: 630
   };
   
-  var pinMainDedaultCoords = {
+  var pinMainDefaultCoords = {
     x: pinMain.offsetLeft,
     y: pinMain.offsetTop
   }
@@ -46,7 +46,7 @@
     })
   }
   
-  var loadPageFirst = function () {
+  var loadDataPageFirst = function () {
     hideAllForm(true);
     onAddressPinMain(); 
   };
@@ -77,7 +77,7 @@
     mapElement.appendChild(fragment);
     if (mapActivated && !pinsLoaded) {
       pinsLoaded = true;
-      window.map.allPinsMap = data;
+      window.map.allPins = data;
     }
   };
   
@@ -89,35 +89,41 @@
     };
 
     document.querySelector('main').appendChild(viewError(errorMessage));
-
     var errorModal = document.querySelector('.error');
     var errorModalButton = errorModal.querySelector('.error__button');
-
     var onErrorClose = function () {
       errorModal.remove();
     };
-
     errorModalButton.addEventListener('click', function () {
       onErrorClose();
     });
-
     errorModal.addEventListener('click', function () {
       onErrorClose();
     });
-
     document.addEventListener('keydown', function (evt) {
-      window.util.isEscEvent(evt, onErrorClose);
+      window.util.isEsc(evt, onErrorClose);
     });
   };
 
   
   var activateMap = function () {
-    map.classList.remove('map--faded');
-    adForm.classList.remove('ad-form--disabled');
-    hideAllForm(false);
-    window.backend.load(onPinsCreate, onError);
+    activateForm();    
+    window.backend.loadData(onPinsCreate, onError);    
   };
 
+  var activateForm = function () {
+    map.classList.remove('map--faded');
+    adForm.classList.remove('ad-form--disabled');
+    hideAllForm(false);   
+  }
+  
+  var dеactivateForm = function () {
+    map.classList.add('map--faded');
+    adForm.classList.add('ad-form--disabled');
+    hideAllForm(true);
+    mapActivated = false;
+  }
+  
   var setPinMainCoords = function (coords) {
     pinMain.style.left = coords.x + 'px';
     pinMain.style.top = coords.y + 'px';
@@ -130,7 +136,7 @@
   };
   
   
-  var pinMainCoords = {
+  var pinMainDefaultCoords = {
     x: pinMain.offsetLeft,
     y: pinMain.offsetTop
   };
@@ -156,34 +162,35 @@
         x: newCoords.x,
         y: newCoords.y
       };
-      pinMainCoords = {
+      pinMainDefaultCoords = {
         x: pinMain.offsetLeft - delta.x,
         y: pinMain.offsetTop - delta.y
       };
       
-      if (pinMainCoords.x > limits.right) {
-        pinMainCoords.x = limits.right;
+      if (pinMainDefaultCoords.x > limits.right) {
+        pinMainDefaultCoords.x = limits.right;
       }
-      if (pinMainCoords.y > limits.bottom) {
-        pinMainCoords.y = limits.bottom;
+      if (pinMainDefaultCoords.y > limits.bottom) {
+        pinMainDefaultCoords.y = limits.bottom;
       }
-      if (pinMainCoords.x < limits.left) {
-        pinMainCoords.x = limits.left;
+      if (pinMainDefaultCoords.x < limits.left) {
+        pinMainDefaultCoords.x = limits.left;
       }
-      if (pinMainCoords.y < limits.top) {
-        pinMainCoords.y = limits.top;
+      if (pinMainDefaultCoords.y < limits.top) {
+        pinMainDefaultCoords.y = limits.top;
       }
 
-      pinMain.style.left = pinMainCoords.x + 'px';
-      pinMain.style.top = pinMainCoords.y + 'px';
+      pinMain.style.left = pinMainDefaultCoords.x + 'px';
+      pinMain.style.top = pinMainDefaultCoords.y + 'px';
     };
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
       if (!mapActivated) {
-        mapActivated = true;
         activateMap();
+        mapActivated = true;
       }
+      
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
@@ -195,17 +202,17 @@
   });
   
   
-  loadPageFirst();
+  loadDataPageFirst();
   
   window.map = {
-    loadPins: onPinsCreate,
-    hideForm: hideAllForm,
-    changePinMainCoords: setPinMainCoords,
-    displayAddressPinMain: onAddressPinMain,
-    delAllPins: clearAllPins,
-    errorExchangeData: onError,
-    allPinsMap: allPins,
-    pinMainCoords: pinMainDedaultCoords
+    onPinsCreate: onPinsCreate,
+    setPinMainCoords: setPinMainCoords,
+    onAddressPinMain: onAddressPinMain,
+    clearAllPins: clearAllPins,
+    dеactivateForm: dеactivateForm,
+    onError: onError,
+    allPins: allPins,
+    pinMainDefaultCoords: pinMainDefaultCoords
   }
   
 })();

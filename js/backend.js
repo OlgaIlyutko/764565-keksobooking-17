@@ -58,7 +58,7 @@
   
 
   window.backend = {
-    load: loadData,
-    save: saveData
+    loadData: loadData,
+    saveData: saveData
   };
 })();

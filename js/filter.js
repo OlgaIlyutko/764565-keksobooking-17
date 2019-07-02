@@ -9,7 +9,7 @@
  
   filterMapFiltersType.onchange = function () {
     var pinsType = [];
-    pinsType = window.map.allPinsMap.filter(function(onePin) {
+    pinsType = window.map.allPins.filter(function(onePin) {
       if (filterMapFiltersType.options[filterMapFiltersType.selectedIndex].value == 'any' ) {
         pinsCount = POINTS_COUNT;
         return true;
@@ -18,7 +18,7 @@
       }
       return onePin.offer.type === filterMapFiltersType.value;
     });  
-    window.map.loadPins(pinsType, pinsCount);
+    window.map.onPinsCreate(pinsType, pinsCount);
   };  
 })();
  

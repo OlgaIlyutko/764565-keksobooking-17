@@ -54,10 +54,11 @@
   
   
   var clearAdForm = function() {
-    window.map.delAllPins();
-    adForm.reset();  
-    window.map.changePinMainCoords(window.map.pinMainCoords);
-    window.map.displayAddressPinMain();
+    window.map.clearAllPins();
+    adForm.reset(); 
+    window.map.dеactivateForm();
+    window.map.setPinMainCoords(window.map.pinMainDefaultCoords);
+    window.map.onAddressPinMain();
   };
   
   var onSuccessSave = function (response, successMessage) {
@@ -69,21 +70,15 @@
     };
   
     document.querySelector('main').appendChild(viewSuccess(successMessage));
-
-    
     var successModal = document.querySelector('.success');
-    
-
     var onSuccessClose = function () {
       successModal.remove();
     };
-
     successModal.addEventListener('click', function () {
       onSuccessClose();
     });
-
     document.addEventListener('keydown', function (evt) {
-      window.util.isEscEvent(evt, onSuccessClose);
+      window.util.isEsc(evt, onSuccessClose);
     });
   };
  
@@ -93,13 +88,26 @@
     evt.preventDefault();
     clearAdForm();
 
-  })
+  });
   
   var adFormSubmitButton = adForm.querySelector('.ad-form__submit');
+  
+  var adFormInput = adForm.querySelectorAll('input');
+  
+  adFormInput.forEach(function (input) {
+    input.addEventListener('invalid', function (evt) {
+      input.classList.add('field__invalid');  
+      input.addEventListener('input', function (evt) {
+        input.classList.remove('field__invalid');
+      })      
+    })  
+  })
+    
   adForm.addEventListener('submit', function (evt) {
-    console.log('end');
-    window.backend.save(new FormData(adForm), onSuccessSave, window.map.errorExchangeData);
     evt.preventDefault();
+    
+    window.backend.saveData(new FormData(adForm), onSuccessSave, window.map.onError);
+    
     clearAdForm();
   });
   
