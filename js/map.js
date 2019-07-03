@@ -6,6 +6,7 @@
   var adForm = document.querySelector('.ad-form');
   var mapFilters = document.querySelector('.map__filters'); 
   var pointsTempl = document.querySelector('#pin').content.querySelector('.map__pin');
+  var pointsPopupTempl = document.querySelector('#card').content.querySelector('.map__card');
   var errorsTempl = document.querySelector('#error').content.querySelector('.error');
   var pinMain = map.querySelector('.map__pin--main');
   var mapElement = document.querySelector('.map__pins');
@@ -25,6 +26,13 @@
   var pinMainDefaultCoords = {
     x: pinMain.offsetLeft,
     y: pinMain.offsetTop
+  }
+  
+  var roomRuToEng = {
+    'Квартира': 'flat',
+    'Бунгало': 'bungalo',
+    'Дом': 'house',
+    'Дворец': 'palace'
   }
   
   var limits = {
@@ -57,6 +65,7 @@
     var pointTemplClone = pointsTempl.cloneNode(true);
     pointTemplClone.style = 'left: ' + (pointTempl.location.x - document.querySelector('.map__pin').offsetWidth / 2) + 'px; top: ' + (pointTempl.location.y - document.querySelector('.map__pin').offsetHeight) + 'px;';
     pointTemplClone.querySelector('img').src = pointTempl.author.avatar;
+    pointTemplClone.querySelector('img').alt = pointTempl.author.avatar + ' ' + pointTempl.location.x + ', ' + pointTempl.location.y;
     return pointTemplClone;
   };
   
@@ -75,11 +84,81 @@
       fragment.appendChild(viewPins(data[j]));
     }
     mapElement.appendChild(fragment);
+    
     if (mapActivated && !pinsLoaded) {
       pinsLoaded = true;
       window.map.allPins = data;
+      
     }
+    createPinsPopup(data[1]);
+   
   };
+  
+  var createPinsPopup = function (element) {
+    var pointPopupTemplClone = pointsPopupTempl.cloneNode(true);
+    pointPopupTemplClone.querySelector('.popup__avatar').src = element.author.avatar;
+    pointPopupTemplClone.querySelector('.popup__title').textContent = element.offer.title;
+    pointPopupTemplClone.querySelector('.popup__text--address').textContent = element.offer.address;
+    pointPopupTemplClone.querySelector('.popup__text--price').textContent = element.offer.price + 'Р/ночь';
+    pointPopupTemplClone.querySelector('.popup__type').textContent = roomRuToEng[element.offer.type];
+    pointPopupTemplClone.querySelector('.popup__text--capacity').textContent = element.offer.rooms + ' комнаты для ' + element.offer.guests + 'гостей';
+    pointPopupTemplClone.querySelector('.popup__text--time').textContent = 'Заезд после ' + element.offer.checkin + ' выезд до ' + element.offer.checkout;
+    Array.from(pointPopupTemplClone.querySelectorAll('.popup__feature')).forEach(function(liElem) {
+      var countMatches = 0;
+      element.offer.features.forEach(function (feature) {
+        if (liElem.className.indexOf('-' + feature) != -1) {
+          countMatches++;
+        }
+      })
+      if (countMatches == 0) {
+        liElem.remove();
+      }
+    });
+    pointPopupTemplClone.querySelector('.popup__description').textContent = element.offer.description; 
+    var popupPhotos = pointPopupTemplClone.querySelector('.popup__photos');
+    var popupPhotoTempl = pointPopupTemplClone.querySelector('.popup__photo');
+    element.offer.photos.forEach(function(photo){
+      var pointTemplImgClone = popupPhotoTempl.cloneNode(true);
+      popupPhotoTempl.src = photo;
+      popupPhotos.appendChild(pointTemplImgClone);
+    });
+    map.insertBefore(pointPopupTemplClone, mapElement);
+    
+  };
+  
+  /*mapElement.onclick = function (event) {
+    var target = event.target;
+    
+   /* while (target != mapElement) {
+      console.log(target);
+      /*if (target.tagName == 'button') {
+        console.log(target)/
+        return;
+      }
+    }
+    target = target.parentNode;
+  }*/
+  
+  mapElement.onclick = function(event) {
+    var target = event.target;
+    var td = target.closest('button');
+    if (!td) return; // клик вне , не интересует
+
+  // если клик на td, но вне этой таблицы (возможно при вложенных таблицах)
+  // то не интересует
+    if (!mapElement.contains(td)) return;
+
+  // нашли элемент, который нас интересует!
+    console.log('1-' + target.alt);
+    var viewPin = allPins.filter(function(altPin) {
+      
+      
+      console.log(window.map.allPins);
+      return target.alt === altPin.author.avatar + ' ' + altPin.location.x + ', ' + altPin.location.y;
+    })  
+    console.log(viewPin);
+    createPinsPopup(viewPin);
+  }
   
   var onError = function (errorMessage) {
     var viewError = function () {
