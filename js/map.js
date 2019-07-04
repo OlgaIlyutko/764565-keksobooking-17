@@ -4,17 +4,21 @@
   
   var map = document.querySelector('.map');
   var adForm = document.querySelector('.ad-form');
-  var mapFilters = document.querySelector('.map__filters'); 
+  var mapFiltersContainer = document.querySelector('.map__filters-container');
+  var mapFilters = mapFiltersContainer.querySelector('.map__filters');
   var pointsTempl = document.querySelector('#pin').content.querySelector('.map__pin');
   var pointsPopupTempl = document.querySelector('#card').content.querySelector('.map__card');
+  var popupPhotoTempl = document.querySelector('#card').content.querySelector('.popup__photo');
   var errorsTempl = document.querySelector('#error').content.querySelector('.error');
   var pinMain = map.querySelector('.map__pin--main');
   var mapElement = document.querySelector('.map__pins');
   var addressField = adForm.querySelector('#address');
   var mapActivated = false;
   var pinsLoaded = false;
+  var PINS_COUNT = 5;
+  var allPins = [];
   var INDICATOR_PIN_HEIGHT = 20;
-  var pinMainSizes = {
+  var PinMainSizes = {
     WIDTH: pinMain.offsetWidth,
     HEIGHT: pinMain.offsetHeight + INDICATOR_PIN_HEIGHT
   };
@@ -22,27 +26,24 @@
     TOP_Y: 130,
     BOTTOM_Y: 630
   };
-  
-  var pinMainDefaultCoords = {
+  var limits = {
+    top: AreaMap.TOP_Y - PinMainSizes.HEIGHT,
+    bottom: AreaMap.BOTTOM_Y - PinMainSizes.HEIGHT,
+    left: -Math.floor(PinMainSizes.WIDTH / 2),
+    right: map.offsetWidth - Math.floor(PinMainSizes.WIDTH / 2)
+  };
+  var PinMainDefaultCoords = {
     x: pinMain.offsetLeft,
     y: pinMain.offsetTop
   }
-  
   var roomRuToEng = {
     'Квартира': 'flat',
     'Бунгало': 'bungalo',
     'Дом': 'house',
     'Дворец': 'palace'
-  }
+  };  
   
-  var limits = {
-    top: AreaMap.TOP_Y - pinMainSizes.HEIGHT,
-    bottom: AreaMap.BOTTOM_Y - pinMainSizes.HEIGHT,
-    left: -pinMain.offsetWidth / 2,
-    right: map.offsetWidth - (pinMain.offsetWidth / 2)
-  };
-  
-  var allPins = [];
+ 
   
   var hideAllForm = function(flag) {
     hideOneForm(adForm, flag);
@@ -76,22 +77,42 @@
     })
   };
   
-  var onPinsCreate = function (data, count) {
+  var onPinsCreate = function (data) {
     clearAllPins();
     var fragment = document.createDocumentFragment();
-    var takeNumber = data.length > count ? count : data.length;
+    var takeNumber = data.length > PINS_COUNT ? PINS_COUNT : data.length;
     for (var j = 0; j < takeNumber; j++) {
       fragment.appendChild(viewPins(data[j]));
     }
     mapElement.appendChild(fragment);
-    
     if (mapActivated && !pinsLoaded) {
       pinsLoaded = true;
       window.map.allPins = data;
-      
     }
-    createPinsPopup(data[1]);
-   
+    createPinsPopup(data[0]); 
+  };
+  
+  
+   var createFeaturesFragment = function (elementFeature) {
+    var featureFragment = document.createDocumentFragment();
+    elementFeature.offer.features.forEach(function (it) {
+      var featureItem = document.createElement('li');
+      featureItem.className = 'popup__feature popup__feature--' + it;
+      featureFragment.appendChild(featureItem);
+    });
+    return featureFragment;
+  };
+  
+  
+
+  var createPhotosFragment = function (elementPhoto) {
+    var photosFragment = document.createDocumentFragment();
+    elementPhoto.offer.photos.forEach(function (it) {
+      var popupPhotoItem = popupPhotoTempl.cloneNode(true);
+      popupPhotoItem.src = it;
+      photosFragment.appendChild(popupPhotoItem);
+    });
+    return photosFragment;
   };
   
   var createPinsPopup = function (element) {
@@ -103,61 +124,47 @@
     pointPopupTemplClone.querySelector('.popup__type').textContent = roomRuToEng[element.offer.type];
     pointPopupTemplClone.querySelector('.popup__text--capacity').textContent = element.offer.rooms + ' комнаты для ' + element.offer.guests + 'гостей';
     pointPopupTemplClone.querySelector('.popup__text--time').textContent = 'Заезд после ' + element.offer.checkin + ' выезд до ' + element.offer.checkout;
-    Array.from(pointPopupTemplClone.querySelectorAll('.popup__feature')).forEach(function(liElem) {
-      var countMatches = 0;
-      element.offer.features.forEach(function (feature) {
-        if (liElem.className.indexOf('-' + feature) != -1) {
-          countMatches++;
-        }
-      })
-      if (countMatches == 0) {
-        liElem.remove();
-      }
-    });
-    pointPopupTemplClone.querySelector('.popup__description').textContent = element.offer.description; 
-    var popupPhotos = pointPopupTemplClone.querySelector('.popup__photos');
-    var popupPhotoTempl = pointPopupTemplClone.querySelector('.popup__photo');
-    element.offer.photos.forEach(function(photo){
-      var pointTemplImgClone = popupPhotoTempl.cloneNode(true);
-      popupPhotoTempl.src = photo;
-      popupPhotos.appendChild(pointTemplImgClone);
-    });
-    map.insertBefore(pointPopupTemplClone, mapElement);
+    pointPopupTemplClone.querySelector('.popup__features').innerHTML = '';
+    pointPopupTemplClone.querySelector('.popup__features').appendChild(createFeaturesFragment(element));
+    pointPopupTemplClone.querySelector('.popup__description').textContent = element.offer.description;  
+    pointPopupTemplClone.querySelector('.popup__photos').removeChild(pointPopupTemplClone.querySelector('.popup__photo'));
+    pointPopupTemplClone.querySelector('.popup__photos').appendChild(createPhotosFragment(element));
+    mapFiltersContainer.insertAdjacentElement('beforebegin', pointPopupTemplClone);
     
+    var closePopupButton = pointPopupTemplClone.querySelector('.popup__close');
+    var closePopup = function () {
+      pointPopupTemplClone.remove();
+      closePopupButton.removeEventListener('click', onClosePopupButton);
+      document.removeEventListener('keydown', onClosePopupEsc);
+    };
+    var onClosePopupButton = function () {
+      closePopup();
+    };
+    closePopupButton.addEventListener('click', onClosePopupButton);
+    var onClosePopupEsc = function (evt) {
+      window.util.isEsc(evt, closePopup);
+    };
+    document.addEventListener('keydown', onClosePopupEsc);
+    return pointPopupTemplClone;
   };
   
-  /*mapElement.onclick = function (event) {
-    var target = event.target;
-    
-   /* while (target != mapElement) {
-      console.log(target);
-      /*if (target.tagName == 'button') {
-        console.log(target)/
-        return;
-      }
-    }
-    target = target.parentNode;
-  }*/
   
-  mapElement.onclick = function(event) {
+  map.onclick = function(event) {
     var target = event.target;
-    var td = target.closest('button');
-    if (!td) return; // клик вне , не интересует
+    var but = target.closest('[type=button]');
+    if (!but) return;
 
-  // если клик на td, но вне этой таблицы (возможно при вложенных таблицах)
-  // то не интересует
-    if (!mapElement.contains(td)) return;
+    if (!mapElement.contains(but)) return;
 
-  // нашли элемент, который нас интересует!
-    console.log('1-' + target.alt);
-    var viewPin = allPins.filter(function(altPin) {
-      
-      
-      console.log(window.map.allPins);
-      return target.alt === altPin.author.avatar + ' ' + altPin.location.x + ', ' + altPin.location.y;
+    var viewPin = window.map.allPins.find(function(altPin) {
+       return target.alt === altPin.author.avatar + ' ' + altPin.location.x + ', ' + altPin.location.y;
     })  
-    console.log(viewPin);
-    createPinsPopup(viewPin);
+    
+    var mapCardRemovable = map.querySelector('.map__card');
+      if (mapCardRemovable) {
+        mapCardRemovable.remove();
+      }
+      createPinsPopup(viewPin);
   }
   
   var onError = function (errorMessage) {
@@ -187,7 +194,7 @@
   
   var activateMap = function () {
     activateForm();    
-    window.backend.loadData(onPinsCreate, onError);    
+    window.backend.loadData(onPinsCreate);    
   };
 
   var activateForm = function () {
@@ -209,8 +216,8 @@
   };
       
   var onAddressPinMain = function () {
-    var addressFieldLeft = pinMain.offsetLeft + Math.round(pinMain.offsetWidth / 2);
-    var addressFieldTop = pinMain.offsetTop + pinMainSizes.HEIGHT;
+    var addressFieldLeft = pinMain.offsetLeft + Math.floor(pinMain.offsetWidth / 2);
+    var addressFieldTop = pinMain.offsetTop + PinMainSizes.HEIGHT;
     addressField.value = addressFieldLeft + ', ' + addressFieldTop;
   };
   
