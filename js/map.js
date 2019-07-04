@@ -88,8 +88,9 @@
     if (mapActivated && !pinsLoaded) {
       pinsLoaded = true;
       window.map.allPins = data;
+      createPinsPopup(data[0]); 
     }
-    createPinsPopup(data[0]); 
+    
   };
   
   
@@ -194,7 +195,7 @@
   
   var activateMap = function () {
     activateForm();    
-    window.backend.loadData(onPinsCreate);    
+    window.backend.loadData(onPinsCreate, onError);    
   };
 
   var activateForm = function () {
