@@ -160,7 +160,7 @@
     var viewPin = window.map.allPins.find(function(altPin) {
        return target.alt === altPin.author.avatar + ' ' + altPin.location.x + ', ' + altPin.location.y;
     })  
-    
+    console.log(target);
     var mapCardRemovable = map.querySelector('.map__card');
       if (mapCardRemovable) {
         mapCardRemovable.remove();
