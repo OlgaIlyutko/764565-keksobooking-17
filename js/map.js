@@ -66,7 +66,8 @@
     var pointTemplClone = pointsTempl.cloneNode(true);
     pointTemplClone.style = 'left: ' + (pointTempl.location.x - document.querySelector('.map__pin').offsetWidth / 2) + 'px; top: ' + (pointTempl.location.y - document.querySelector('.map__pin').offsetHeight) + 'px;';
     pointTemplClone.querySelector('img').src = pointTempl.author.avatar;
-    pointTemplClone.querySelector('img').alt = pointTempl.author.avatar + ' ' + pointTempl.location.x + ', ' + pointTempl.location.y;
+    
+    pointTemplClone.setAttribute('name', pointTempl.author.avatar + '_' + pointTempl.location.x + '_' + pointTempl.location.y);
     return pointTemplClone;
   };
   
@@ -154,18 +155,19 @@
     var target = event.target;
     var but = target.closest('[type=button]');
     if (!but) return;
-
     if (!mapElement.contains(but)) return;
+    if (target.tagName === 'IMG') {
+      target = target.parentNode;
+    }   
+    var viewPin = window.map.allPins.find(function(altPin) {  
+       return target.name === altPin.author.avatar + '_' + altPin.location.x + '_' + altPin.location.y;
+    });  
 
-    var viewPin = window.map.allPins.find(function(altPin) {
-       return target.alt === altPin.author.avatar + ' ' + altPin.location.x + ', ' + altPin.location.y;
-    })  
-    console.log(target);
     var mapCardRemovable = map.querySelector('.map__card');
-      if (mapCardRemovable) {
-        mapCardRemovable.remove();
-      }
-      createPinsPopup(viewPin);
+    if (mapCardRemovable) {
+       mapCardRemovable.remove();
+    }
+    createPinsPopup(viewPin);
   }
   
   var onError = function (errorMessage) {
