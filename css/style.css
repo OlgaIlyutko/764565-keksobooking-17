@@ -513,7 +513,7 @@ fieldset {
   margin-bottom: 10px;
 }
 
-.ad-form-header__uploadData {
+.ad-form-header__upload {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -762,7 +762,7 @@ fieldset {
       flex-wrap: wrap;
 }
 
-.ad-form__uploadData {
+.ad-form__upload {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -772,7 +772,7 @@ fieldset {
   min-height: 70px;
 }
 
-.ad-form__uploadData .ad-form__input {
+.ad-form__upload .ad-form__input {
   width: auto;
 }
 

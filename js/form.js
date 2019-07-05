@@ -105,9 +105,7 @@
     
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    
     window.backend.saveData(new FormData(adForm), onSuccessSave, window.map.onError);
-    
     clearAdForm();
   });
   
