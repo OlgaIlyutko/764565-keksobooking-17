@@ -151,7 +151,7 @@
   };
   
   
-  map.onclick = function(event) {
+  map.addEventListener('click', function(event) {
     var target = event.target;
     var but = target.closest('[type=button]');
     if (!but) return;
@@ -168,7 +168,7 @@
        mapCardRemovable.remove();
     }
     createPinsPopup(viewPin);
-  }
+  })
   
   var onError = function (errorMessage) {
     var viewError = function () {
