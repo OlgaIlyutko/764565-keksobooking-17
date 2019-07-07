@@ -12,7 +12,12 @@
   var adFormRoom = adForm.querySelector('#room_number');
   var adFormCapacity = adForm.querySelector('#capacity');
   var addressField = adForm.querySelector('#address');
-  var successTempl = document.querySelector('#success').content.querySelector('.success');
+  var fileChooserAvatar = adForm.querySelector('.ad-form__field input');
+  var fileViewerAvatar = adForm.querySelector('.ad-form-header__preview img');
+  var fileChooserPhoto = adForm.querySelector('.ad-form__upload input');
+  var fileViewerPhoto = adForm.querySelector('.ad-form__photo');
+  var FILES_TYPES = ['gif', 'jpg'];
+ 
 
   var typeToPrice = {
     'bungalo': '0',
@@ -51,6 +56,42 @@
     var guests = Array.from(availableOptions);
     adFormCapacity.value = guests[guests.length - 1];
   });
+ 
+  fileChooserAvatar.addEventListener('change', function () {
+    var file = fileChooserAvatar.files[0];
+    var fileName = file.name.toLowerCase();
+    var matches = FILES_TYPES.some(function(it) {
+      return fileName.endsWith(it);
+    }); 
+    if (matches) {
+      var reader = new FileReader();
+      reader.addEventListener('load', function() {
+        fileViewerAvatar.src = reader.result;
+      });
+    reader.readAsDataURL(file);
+    }  
+  })
+  
+ 
+
+  fileChooserPhoto.addEventListener('change', function () {
+    var file = fileChooserPhoto.files[0];
+    var fileName = file.name.toLowerCase();
+    var matches = FILES_TYPES.some(function(it) {
+      return fileName.endsWith(it);
+    }); 
+    if (matches) {
+      var reader = new FileReader();
+      reader.addEventListener('load', function() {
+        var imgPhoto = document.createElement('img');
+        imgPhoto.src = reader.result;
+        imgPhoto.classList.add('popup__photo');
+        imgPhoto.setAttribute('width', '100%');
+        fileViewerPhoto.appendChild(imgPhoto);
+      });
+    reader.readAsDataURL(file);
+    }  
+  })
  
   var onPopupMessage = function (type, message) {
     var createMessage = function () {
