@@ -53,12 +53,7 @@
   };
   
   var onFilterMap = function() {
-    var map = document.querySelector('.map'); 
-    var mapCardRemovable = map.querySelector('.map__card');
-    if (mapCardRemovable) {
-        mapCardRemovable.remove();
-      } 
-     debounce(window.map.onPinsCreate(window.map.allPins.filter(filterMapHouseType).filter(filterMapHousePrice).filter(filterMapHouseRooms).filter(filterMapHouseGuests).filter(filterMapHouseFeatures)));
+    window.map.clearAllPins(); debounce(window.map.onPinsCreate(window.map.allPins.filter(filterMapHouseType).filter(filterMapHousePrice).filter(filterMapHouseRooms).filter(filterMapHouseGuests).filter(filterMapHouseFeatures)));
   };
   
   var debounce = function (cb) {
@@ -66,7 +61,7 @@
       window.clearTimeout(lastTimeout);
     }
     lastTimeout = window.setTimeout(cb, DEBOUNCE_INTERVAL);
-  }
+  };
   
   mapFilters.addEventListener('change', onFilterMap);
   

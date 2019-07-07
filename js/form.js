@@ -28,11 +28,11 @@
     '100': ['0']
   };
 
-  adFormType.onchange = function () {
+  adFormType.addEventListener('change', function () {
     var adFormTypeValue = adFormType.options[adFormType.selectedIndex].value;
     adFormPrice.min = typeToPrice[adFormTypeValue];
     adFormPrice.placeholder = typeToPrice[adFormTypeValue];
-  };
+  });
 
   adFormTimein.addEventListener('change', function () {
     adFormTimeout.value = adFormTimein.value;
@@ -51,49 +51,50 @@
     var guests = Array.from(availableOptions);
     adFormCapacity.value = guests[guests.length - 1];
   });
-
-
-  var clearAdForm = function() {
-    window.map.clearAllPins();
-    adForm.reset();
-    window.map.dеactivateForm();
-    window.map.setPinMainCoords(window.map.pinMainDefaultCoords);
-    window.map.onAddressPinMain();
+ 
+  var onPopupMessage = function (type, message) {
+    var createMessage = function () {
+      var messageTempl = document.querySelector('#'+type).content.querySelector('.'+type);
+      var messageTemplClone = messageTempl.cloneNode(true);
+      messageTemplClone.querySelector('p').textContent = message;
+      return messageTemplClone;
+    };
+    document.querySelector('main').appendChild(createMessage(type, message));
+    var popup = document.querySelector('.'+type);
+    var onPopupClose = function () {
+      popup.remove();
+    };
+    popup.addEventListener('click', function () {
+      onPopupClose();
+    });
+    document.addEventListener('keydown', function (evt) {
+      window.util.isEsc(evt, onPopupClose);
+    });
+    var popupCloseButton = popup.querySelector('.'+type+'__button');
+    if (popupCloseButton) {
+      popupCloseButton.addEventListener('click', function () {
+        onPopupClose();
+      });
+    }    
   };
 
   var onSuccessSave = function (response) {
     var successMessage = 'Объявление успешно отправлено';
-    var viewSuccess = function (successMessage) {
-      var successTemplClone = successTempl.cloneNode(true);
-      successTemplClone.querySelector('p').textContent = successMessage;
-      return successTemplClone;
-    };
-
-    document.querySelector('main').appendChild(viewSuccess(successMessage));
-    var successModal = document.querySelector('.success');
-    var onSuccessClose = function () {
-      successModal.remove();
-    };
-    successModal.addEventListener('click', function () {
-      onSuccessClose();
-    });
-    document.addEventListener('keydown', function (evt) {
-      window.util.isEsc(evt, onSuccessClose);
-    });
+    onPopupMessage('success', successMessage);
   };
-
-
+  
+  var onError = function (errorMessage) {
+    onPopupMessage('error', errorMessage);
+  };
+  
   var adFormResetButton = adForm.querySelector('.ad-form__reset');
   adFormResetButton.addEventListener('click', function(evt) {
     evt.preventDefault();
-    clearAdForm();
-
+    window.map.dеactivateMap();
   });
-
-  var adFormSubmitButton = adForm.querySelector('.ad-form__submit');
+  
 
   var adFormInput = adForm.querySelectorAll('input');
-
   adFormInput.forEach(function (input) {
     input.addEventListener('invalid', function (evt) {
       input.classList.add('field__invalid');
@@ -102,11 +103,13 @@
       })
     })
   })
-
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    window.backend.saveData(new FormData(adForm), onSuccessSave, window.map.onError);
-    clearAdForm();
+    window.backend.saveData(new FormData(adForm), onSuccessSave, onError);
+    window.map.dеactivateMap();
   });
-
+  
+  window.form = {
+    onError: onError
+  }
 })();
