@@ -21,7 +21,7 @@
       MAX: Infinity
     }
   };
-  var DEBOUNCE_INTERVAL = 500;
+  var DEBOUNCE_INTERVAL = 50000;
   var lastTimeout;
   
   var filterItem = function (it, item, key) {
@@ -60,7 +60,9 @@
     if (lastTimeout) {
       window.clearTimeout(lastTimeout);
     }
-    lastTimeout = window.setTimeout(cb, DEBOUNCE_INTERVAL);
+    lastTimeout = window.setTimeout(function() {
+        cb.apply(null, parameters);
+      }, DEBOUNCE_INTERVAL);
   };
   
   mapFilters.addEventListener('change', onFilterMap);
