@@ -13,7 +13,6 @@
   var mapAllPins = document.querySelector('.map__pins');
   var addressField = adForm.querySelector('#address');
   var mapActivated = false;
-  var pinsLoaded = false;
   var PINS_COUNT = 5;
   var allPins = [];
   var INDICATOR_PIN_HEIGHT = 20;
@@ -34,7 +33,7 @@
   var PinMainDefaultCoords = {
     x: pinMain.offsetLeft,
     y: pinMain.offsetTop
-  }
+  };
   var roomRuToEng = {
     'Квартира': 'flat',
     'Бунгало': 'bungalo',
@@ -43,28 +42,28 @@
   };
 
 
-  var hideOneForm = function(form, flag) {
+  var hideOneForm = function (form, flag) {
     Array.from(form.children).forEach(function (field) {
       field.disabled = flag;
-    })
+    });
   };
-  var hideAllForm = function(flag) {
+  var hideAllForm = function (flag) {
     hideOneForm(adForm, flag);
     hideOneForm(mapFilters, flag);
   };
-  
-  
+
+
   var clearAllPins = function () {
-    var mapPins = mapAllPins.querySelectorAll("[class=map__pin]");
-    mapPins.forEach(function(it) {
+    var mapPins = mapAllPins.querySelectorAll('[class=map__pin]');
+    mapPins.forEach(function (it) {
       it.remove();
-    })
+    });
     var mapCardRemovable = map.querySelector('.map__card');
     if (mapCardRemovable) {
       mapCardRemovable.remove();
     }
   };
-  
+
 
   var viewPin = function (elementPin) {
     var pinTemplClone = pinTempl.cloneNode(true);
@@ -80,10 +79,10 @@
     for (var j = 0; j < takeNumber; j++) {
       fragment.appendChild(viewPin(data[j]));
     }
-    mapAllPins.appendChild(fragment); 
+    mapAllPins.appendChild(fragment);
   };
 
-  
+
   var createFeaturesFragment = function (elementFeature) {
     var featureFragment = document.createDocumentFragment();
     elementFeature.offer.features.forEach(function (it) {
@@ -144,8 +143,8 @@
     var addressFieldTop = mapActivated ? pinMain.offsetTop + Math.floor(PinMainSizes.HEIGHT) : pinMain.offsetTop + Math.floor(pinMain.offsetHeight / 2);
     addressField.value = addressFieldLeft + ', ' + addressFieldTop;
   };
-  
-  
+
+
   var pinMainCoords = {
     x: pinMain.offsetLeft,
     y: pinMain.offsetTop
@@ -192,7 +191,7 @@
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
       if (!mapActivated) {
-        activateMap(); 
+        activateMap();
       }
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
@@ -204,11 +203,10 @@
 
   var onSuccessLoad = function (data) {
     onPinsCreate(data);
-    pinsLoaded = true;
     window.map.allPins = data;
     createPinPopup(window.map.allPins[0]);
   };
-  
+
   var activateMap = function () {
     map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
@@ -216,43 +214,44 @@
     mapActivated = true;
     window.backend.loadData(onSuccessLoad, window.form.onError);
     mapAllPins.addEventListener('click', onClickPin);
+    mapFilters.addEventListener('change', window.filter.onFilterMap);
   };
-  
+
   var dеactivateMap = function () {
     map.classList.add('map--faded');
     adForm.classList.add('ad-form--disabled');
     hideAllForm(true);
     adForm.reset();
     window.form.clearImage();
-    clearAllPins(); 
+    window.filter.clearAllFilter();
+    clearAllPins();
     mapActivated = false;
-    pinsLoaded = false;
     setPinMainCoords(PinMainDefaultCoords);
     onAddressPinMain();
     mapAllPins.removeEventListener('click', onClickPin);
+    mapFilters.removeEventListener('change', window.filter.onFilterMap);
   };
 
   dеactivateMap();
-  
+
   var onClickPin = function (event) {
     var target = event.target;
     while (target !== mapAllPins) {
       if (target.tagName === 'BUTTON' && target.type === 'button') {
-        var targetPin = window.map.allPins.find(function(it) {
+        var targetPin = window.map.allPins.find(function (it) {
           return target.name === it.author.avatar + '_' + it.location.x + '_' + it.location.y;
         });
         var mapCardRemovable = map.querySelector('.map__card');
         if (mapCardRemovable) {
-           mapCardRemovable.remove();
+          mapCardRemovable.remove();
         }
         createPinPopup(targetPin);
-		    return;
+        return;
       }
       target = target.parentNode;
-    }  
+    }
   };
-  
-  
+
 
   window.map = {
     onPinsCreate: onPinsCreate,
@@ -262,6 +261,6 @@
     dеactivateMap: dеactivateMap,
     onSuccessLoad: onSuccessLoad,
     allPins: allPins
-  }
+  };
 
 })();
