@@ -22,7 +22,6 @@
       MAX: Infinity
     }
   };
-  var DEBOUNCE_INTERVAL = 500;
 
   var filterItem = function (it, item, key) {
     return it.value === 'any' ? true : it.value === item[key].toString();
@@ -62,23 +61,11 @@
     });
   };
 
-  var onFilterMap = function () {
-    window.map.clearAllPins(); debounce(window.map.onPinsCreate(window.map.allPins.filter(filterMapHouseType).filter(filterMapHousePrice).filter(filterMapHouseRooms).filter(filterMapHouseGuests).filter(filterMapHouseFeatures)));
-  };
+  var onFilterMap = window.util.debounce(function () {
+    window.map.clearAllPins();
+    window.map.onPinsCreate(window.map.allPins.filter(filterMapHouseType).filter(filterMapHousePrice).filter(filterMapHouseRooms).filter(filterMapHouseGuests).filter(filterMapHouseFeatures));
+  });
 
-  var debounce = function (cb) {
-    var lastTimeout = null;
-
-    return function () {
-      var parameters = arguments;
-      if (lastTimeout) {
-        window.clearTimeout(lastTimeout);
-      }
-      lastTimeout = window.setTimeout(function () {
-        cb.apply(null, parameters);
-      }, DEBOUNCE_INTERVAL);
-    };
-  };
 
   window.filter = {
     onFilterMap: onFilterMap,
