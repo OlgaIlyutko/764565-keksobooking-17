@@ -2,11 +2,11 @@
 
 (function () {
   var ServerUrl = {
-   LOAD: 'https://js.dump.academy/keksobooking/data',
-   SAVE: 'https://js.dump.academy/keksobooking'
-  }
+    LOAD: 'https://js.dump.academy/keksobooking/data',
+    SAVE: 'https://js.dump.academy/keksobooking'
+  };
   var OK_STATUS = 200;
-  var TIMEOUT = 100000;
+  var TIMEOUT = 10000;
 
   var createXhr = function (onLoad, onError, method, url) {
     var xhr = new XMLHttpRequest();
