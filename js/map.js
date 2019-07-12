@@ -225,7 +225,6 @@
   var onSuccessLoad = function (data) {
     onPinsCreate(data);
     window.map.allPins = data;
-    createPinPopup(window.map.allPins[0]);
   };
 
   var activateMap = function () {
