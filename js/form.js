@@ -33,7 +33,7 @@
     adFormPrice.min = typeToPrice[adFormTypeValue];
     adFormPrice.placeholder = typeToPrice[adFormTypeValue];
   };
-  
+
   var onChangeAdFormTimein = function () {
     adFormTimeout.value = adFormTimein.value;
   };

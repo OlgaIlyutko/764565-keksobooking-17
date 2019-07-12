@@ -5,7 +5,6 @@
   var map = document.querySelector('.map');
   var adForm = document.querySelector('.ad-form');
   var adFormType = adForm.querySelector('#type');
-  var adFormPrice = adForm.querySelector('#price');
   var adFormTimein = adForm.querySelector('#timein');
   var adFormTimeout = adForm.querySelector('#timeout');
   var adFormRoom = adForm.querySelector('#room_number');
