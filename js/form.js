@@ -91,7 +91,7 @@
   var adFormResetButton = adForm.querySelector('.ad-form__reset');
   adFormResetButton.addEventListener('click', function (evt) {
     evt.preventDefault();
-    clearImage();
+    window.image.clearImage();
     window.map.dеactivateMap();
   });
 

@@ -65,7 +65,7 @@
     clearAvatar();
     clearPhoto();
   };
-  
+
   var checkFileType = function (file) {
     return FILES_TYPES.some(function (it) {
       return file.name.toLowerCase().endsWith(it);
@@ -86,7 +86,7 @@
   var onChangeFileChooserAvatar = function () {
     chooseImages(fileChooserAvatar, createReaderAvatar);
   };
-  
+
   window.image = {
     onChangeFileChooserPhoto: onChangeFileChooserPhoto,
     onChangeFileChooserAvatar: onChangeFileChooserAvatar,
