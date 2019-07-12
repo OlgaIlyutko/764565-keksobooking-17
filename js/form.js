@@ -8,6 +8,7 @@
   var adFormTimeout = adForm.querySelector('#timeout');
   var adFormRoom = adForm.querySelector('#room_number');
   var adFormCapacity = adForm.querySelector('#capacity');
+  var adFormCapacityOptions = adFormCapacity.querySelectorAll('option');
   var fileChooserAvatar = adForm.querySelector('.ad-form__field input');
   var fileViewerAvatar = adForm.querySelector('.ad-form-header__preview img');
   var fileChooserPhoto = adForm.querySelector('.ad-form__upload input');
@@ -27,21 +28,21 @@
   };
 
 
-  adFormType.addEventListener('change', function () {
+  var onChangeAdFormType = function () {
     var adFormTypeValue = adFormType.options[adFormType.selectedIndex].value;
     adFormPrice.min = typeToPrice[adFormTypeValue];
     adFormPrice.placeholder = typeToPrice[adFormTypeValue];
-  });
-
-  adFormTimein.addEventListener('change', function () {
+  };
+  
+  var onChangeAdFormTimein = function () {
     adFormTimeout.value = adFormTimein.value;
-  });
-  adFormTimeout.addEventListener('change', function () {
-    adFormTimein.value = adFormTimeout.value;
-  });
+  };
 
-  var adFormCapacityOptions = adFormCapacity.querySelectorAll('option');
-  adFormRoom.addEventListener('change', function () {
+  var onChangeAdFormTimeout = function () {
+    adFormTimein.value = adFormTimeout.value;
+  };
+
+  var onChangeAdFormRoom = function () {
     var adFormRoomValue = adFormRoom.value;
     var availableOptions = roomToGuest[adFormRoomValue];
     adFormCapacityOptions.forEach(function (option) {
@@ -49,7 +50,7 @@
     });
     var guests = Array.from(availableOptions);
     adFormCapacity.value = guests[guests.length - 1];
-  });
+  };
 
 
   var createReaderAvatar = function (file) {
@@ -117,19 +118,20 @@
     });
   };
 
-  fileChooserPhoto.addEventListener('change', function () {
-    var matches = Array.from(fileChooserPhoto.files).filter(checkFileType);
+  var chooseImages = function (input, container) {
+    var matches = Array.from(input.files).filter(checkFileType);
     if (matches) {
-      matches.forEach(createReaderPhoto);
+      matches.forEach(container);
     }
-  });
+  };
 
-  fileChooserAvatar.addEventListener('change', function () {
-    var matches = Array.from(fileChooserAvatar.files).filter(checkFileType);
-    if (matches) {
-      matches.forEach(createReaderAvatar);
-    }
-  });
+  var onChangeFileChooserPhoto = function () {
+    chooseImages(fileChooserPhoto, createReaderPhoto);
+  };
+
+  var onChangeFileChooserAvatar = function () {
+    chooseImages(fileChooserAvatar, createReaderAvatar);
+  };
 
 
   var createMessage = function (type, message) {
@@ -189,14 +191,21 @@
       });
     });
   });
-  adForm.addEventListener('submit', function (evt) {
+  var onSubmitAdForm = function (evt) {
     evt.preventDefault();
     window.backend.saveData(new FormData(adForm), onSuccessSave, onError);
     window.map.dеactivateMap();
-  });
+  };
 
   window.form = {
     onError: onError,
+    onSubmitAdForm: onSubmitAdForm,
+    onChangeAdFormType: onChangeAdFormType,
+    onChangeAdFormTimein: onChangeAdFormTimein,
+    onChangeAdFormTimeout: onChangeAdFormTimeout,
+    onChangeAdFormRoom: onChangeAdFormRoom,
+    onChangeFileChooserPhoto: onChangeFileChooserPhoto,
+    onChangeFileChooserAvatar: onChangeFileChooserAvatar,
     clearImage: clearImage
   };
 })();

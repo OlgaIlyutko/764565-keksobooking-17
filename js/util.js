@@ -33,7 +33,7 @@
 
   window.util = {
     isEsc: isEsc,
-    isEnterEvent: isEnter,
+    isEnter: isEnter,
     debounce: debounce
   };
 })();

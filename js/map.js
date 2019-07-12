@@ -4,6 +4,13 @@
 
   var map = document.querySelector('.map');
   var adForm = document.querySelector('.ad-form');
+  var adFormType = adForm.querySelector('#type');
+  var adFormPrice = adForm.querySelector('#price');
+  var adFormTimein = adForm.querySelector('#timein');
+  var adFormTimeout = adForm.querySelector('#timeout');
+  var adFormRoom = adForm.querySelector('#room_number');
+  var fileChooserAvatar = adForm.querySelector('.ad-form__field input');
+  var fileChooserPhoto = adForm.querySelector('.ad-form__upload input');
   var mapFiltersContainer = document.querySelector('.map__filters-container');
   var mapFilters = mapFiltersContainer.querySelector('.map__filters');
   var pinTempl = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -24,11 +31,11 @@
     TOP_Y: 130,
     BOTTOM_Y: 630
   };
-  var limits = {
-    top: AreaMap.TOP_Y - PinMainSizes.HEIGHT,
-    bottom: AreaMap.BOTTOM_Y - PinMainSizes.HEIGHT,
-    left: -Math.floor(PinMainSizes.WIDTH / 2),
-    right: map.offsetWidth - Math.floor(PinMainSizes.WIDTH / 2)
+  var Limits = {
+    TOP: AreaMap.TOP_Y - PinMainSizes.HEIGHT,
+    BOTTOM: AreaMap.BOTTOM_Y - PinMainSizes.HEIGHT,
+    LEFT: -Math.floor(PinMainSizes.WIDTH / 2),
+    RIGHT: map.offsetWidth - Math.floor(PinMainSizes.WIDTH / 2)
   };
   var PinMainDefaultCoords = {
     x: pinMain.offsetLeft,
@@ -49,6 +56,21 @@
   };
   var hideAllForm = function (flag) {
     hideOneForm(adForm, flag);
+    if (!flag) {
+      adFormType.addEventListener('change', window.form.onChangeAdFormType);
+      adFormTimein.addEventListener('change', window.form.onChangeAdFormTimein);
+      adFormTimeout.addEventListener('change', window.form.onChangeAdFormTimeout);
+      adFormRoom.addEventListener('change', window.form.onChangeAdFormRoom);
+      fileChooserPhoto.addEventListener('change', window.form.onChangeFileChooserPhoto);
+      fileChooserAvatar.addEventListener('change', window.form.onChangeFileChooserAvatar);
+    } else {
+      adFormType.removeEventListener('change', window.form.onChangeAdFormType);
+      adFormTimein.removeEventListener('change', window.form.onChangeAdFormTimein);
+      adFormTimeout.removeEventListener('change', window.form.onChangeAdFormTimeout);
+      adFormRoom.removeEventListener('change', window.form.onChangeAdFormRoom);
+      fileChooserPhoto.removeEventListener('change', window.form.onChangeFileChooserPhoto);
+      fileChooserAvatar.removeEventListener('change', window.form.onChangeFileChooserAvatar);
+    }
     hideOneForm(mapFilters, flag);
   };
 
@@ -173,17 +195,17 @@
         x: pinMain.offsetLeft - delta.x,
         y: pinMain.offsetTop - delta.y
       };
-      if (pinMainCoords.x > limits.right) {
-        pinMainCoords.x = limits.right;
+      if (pinMainCoords.x > Limits.RIGHT) {
+        pinMainCoords.x = Limits.RIGHT;
       }
-      if (pinMainCoords.y > limits.bottom) {
-        pinMainCoords.y = limits.bottom;
+      if (pinMainCoords.y > Limits.BOTTOM) {
+        pinMainCoords.y = Limits.BOTTOM;
       }
-      if (pinMainCoords.x < limits.left) {
-        pinMainCoords.x = limits.left;
+      if (pinMainCoords.x < Limits.LEFT) {
+        pinMainCoords.x = Limits.LEFT;
       }
-      if (pinMainCoords.y < limits.top) {
-        pinMainCoords.y = limits.top;
+      if (pinMainCoords.y < Limits.TOP) {
+        pinMainCoords.y = Limits.TOP;
       }
       pinMain.style.left = pinMainCoords.x + 'px';
       pinMain.style.top = pinMainCoords.y + 'px';
@@ -215,6 +237,7 @@
     window.backend.loadData(onSuccessLoad, window.form.onError);
     mapAllPins.addEventListener('click', onClickPin);
     mapFilters.addEventListener('change', window.filter.onFilterMap);
+    adForm.addEventListener('submit', window.form.onSubmitAdForm);
   };
 
   var dеactivateMap = function () {
@@ -230,6 +253,7 @@
     onAddressPinMain();
     mapAllPins.removeEventListener('click', onClickPin);
     mapFilters.removeEventListener('change', window.filter.onFilterMap);
+    adForm.removeEventListener('submit', window.form.onSubmitAdForm);
   };
 
   dеactivateMap();
