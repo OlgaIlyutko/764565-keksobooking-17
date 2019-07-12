@@ -60,15 +60,15 @@
       adFormTimein.addEventListener('change', window.form.onChangeAdFormTimein);
       adFormTimeout.addEventListener('change', window.form.onChangeAdFormTimeout);
       adFormRoom.addEventListener('change', window.form.onChangeAdFormRoom);
-      fileChooserPhoto.addEventListener('change', window.form.onChangeFileChooserPhoto);
-      fileChooserAvatar.addEventListener('change', window.form.onChangeFileChooserAvatar);
+      fileChooserPhoto.addEventListener('change', window.image.onChangeFileChooserPhoto);
+      fileChooserAvatar.addEventListener('change', window.image.onChangeFileChooserAvatar);
     } else {
       adFormType.removeEventListener('change', window.form.onChangeAdFormType);
       adFormTimein.removeEventListener('change', window.form.onChangeAdFormTimein);
       adFormTimeout.removeEventListener('change', window.form.onChangeAdFormTimeout);
       adFormRoom.removeEventListener('change', window.form.onChangeAdFormRoom);
-      fileChooserPhoto.removeEventListener('change', window.form.onChangeFileChooserPhoto);
-      fileChooserAvatar.removeEventListener('change', window.form.onChangeFileChooserAvatar);
+      fileChooserPhoto.removeEventListener('change', window.image.onChangeFileChooserPhoto);
+      fileChooserAvatar.removeEventListener('change', window.image.onChangeFileChooserAvatar);
     }
     hideOneForm(mapFilters, flag);
   };
@@ -243,7 +243,7 @@
     adForm.classList.add('ad-form--disabled');
     hideAllForm(true);
     adForm.reset();
-    window.form.clearImage();
+    window.image.clearImage();
     window.filter.clearAllFilter();
     clearAllPins();
     mapActivated = false;
